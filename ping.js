@@ -18,7 +18,7 @@ function calcNextHeartbeat(lastHeartbeat) {
   reset.setMinutes(0, 0, 0)
   reset.setHours(reset.getHours() + 5)
 
-  const minute = Math.floor(Math.random() * 60)
+  const minute = Math.floor(Math.random() * 21)
   const second = Math.floor(Math.random() * 60)
   reset.setMinutes(minute, second, 0)
 
