@@ -1,30 +1,22 @@
 # Claude Code Session Heartbeat
 
-`ping.js` 是一個常駐心跳腳本，登入時透過工作排程器啟動後持續在背景運行，每 1 分鐘檢查一次心跳狀態。若距離上次心跳超過 5 小時，則執行 `claude -p "Say hi"` 以延續 Claude Code Session。
+Keep your Claude Code session alive automatically.
 
-## 安裝
+## Installation
 
-請先安裝 Node.js 24，然後 clone 此儲存庫：
+Install Node.js 24, then clone this repository:
 
 ```bash
 git clone https://github.com/ycs77/claude-code-session-heartbeat.git
 ```
 
-## 設定工作排程器
+Run `install.cmd` to register the startup entry.
 
-設定工作排程器，讓使用者登入時自動啟動 `ping.js` 常駐腳本。需要以系統管理員身分執行 PowerShell (將 `[your-path]` 替換為你的 Claude Code Session Heartbeat 安裝路徑)。
+## Uninstallation
 
-建立工作排程器任務：
+1. Run `uninstall.cmd` to remove the registry startup entry
+2. Delete this folder
 
-```ps1
-Register-ScheduledTask -TaskName "PingClaudeCodeSessionHeartbeat" -Action (New-ScheduledTaskAction -Execute "powershell" -Argument "-WindowStyle Hidden -Command `"& 'C:\Program Files\nodejs\node.exe' 'C:\[your-path]\claude-code-session-heartbeat\ping.js'`"") -Trigger (New-ScheduledTaskTrigger -AtLogOn) -Settings (New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries) -RunLevel Limited
-```
-
-## 解除安裝
-
-1. 刪除當前資料夾
-2. 使用 PowerShell 刪除工作排程器任務：`Unregister-ScheduledTask -TaskName "PingClaudeCodeSessionHeartbeat" -Confirm:$false`
-
-## 授權
+## License
 
 [MIT License](LICENSE.md)
