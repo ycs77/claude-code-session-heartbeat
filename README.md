@@ -7,24 +7,22 @@
 請先安裝 Node.js 24，然後 clone 此儲存庫：
 
 ```bash
-cd ~
-git clone https://github.com/ycs77/claude-code-session-heartbeat.git .claude-code-session-heartbeat
-cd .claude-code-session-heartbeat
+git clone https://github.com/ycs77/claude-code-session-heartbeat.git
 ```
 
 ## 設定工作排程器
 
-設定工作排程器，讓使用者登入時自動啟動 `ping.js` 常駐腳本。需要以系統管理員身分執行 PowerShell (將 `[user]` 替換為你的 Windows 使用者名稱)。
+設定工作排程器，讓使用者登入時自動啟動 `ping.js` 常駐腳本。需要以系統管理員身分執行 PowerShell (將 `[your-path]` 替換為你的 Claude Code Session Heartbeat 安裝路徑)。
 
 建立工作排程器任務：
 
 ```ps1
-Register-ScheduledTask -TaskName "PingClaudeCodeSessionHeartbeat" -Action (New-ScheduledTaskAction -Execute "powershell" -Argument "-WindowStyle Hidden -Command `"& 'C:\Program Files\nodejs\node.exe' 'C:\Users\[user]\.claude-code-session-heartbeat\ping.js'`"") -Trigger (New-ScheduledTaskTrigger -AtLogOn) -Settings (New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries) -RunLevel Limited
+Register-ScheduledTask -TaskName "PingClaudeCodeSessionHeartbeat" -Action (New-ScheduledTaskAction -Execute "powershell" -Argument "-WindowStyle Hidden -Command `"& 'C:\Program Files\nodejs\node.exe' 'C:\[your-path]\claude-code-session-heartbeat\ping.js'`"") -Trigger (New-ScheduledTaskTrigger -AtLogOn) -Settings (New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries) -RunLevel Limited
 ```
 
 ## 解除安裝
 
-1. 刪除 `C:\Users\[user]\.claude-code-session-heartbeat` 目錄
+1. 刪除當前資料夾
 2. 使用 PowerShell 刪除工作排程器任務：`Unregister-ScheduledTask -TaskName "PingClaudeCodeSessionHeartbeat" -Confirm:$false`
 
 ## 授權
