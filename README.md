@@ -1,6 +1,6 @@
 # Claude Code Session Heartbeat
 
-Keep your Claude Code session alive automatically.
+Keep your Claude Code session alive automatically on Windows.
 
 ## Installation
 
