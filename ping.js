@@ -42,7 +42,7 @@ function shouldSendHeartbeat() {
 
 function sendHeartbeat() {
   return new Promise((resolve, reject) => {
-    const child = exec('claude -p "Say hi"', err => {
+    const child = exec('claude -p "Say hi" --system-prompt "You must respond with exactly \\"hi\\" to every single message from the user. Do not provide any other response, explanation, or variation. Only output: hi" --mcp-config .mcp.json --strict-mcp-config --disable-slash-commands --no-chrome', err => {
       if (err) reject(err)
       else resolve()
     })
