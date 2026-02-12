@@ -8,8 +8,19 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const STATE_PATH = path.join(__dirname, 'state.json')
 const LOG_PATH = path.join(__dirname, 'ping.log')
 
+function formatDateTime(date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  const seconds = String(date.getSeconds()).padStart(2, '0')
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+}
+
 function log(message) {
-  const line = `[${new Date().toISOString()}] ${message}\n`
+  const line = `[${formatDateTime(new Date())}] ${message}\n`
   fs.appendFileSync(LOG_PATH, line)
 }
 
@@ -54,8 +65,8 @@ function writeState() {
   const now = new Date()
   const nextHeartbeat = calcNextHeartbeat(now)
   const data = {
-    lastHeartbeat: now.toISOString(),
-    nextHeartbeat: nextHeartbeat.toISOString(),
+    lastHeartbeat: formatDateTime(now),
+    nextHeartbeat: formatDateTime(nextHeartbeat),
   }
   fs.writeFileSync(STATE_PATH, `${JSON.stringify(data, null, 2)}\n`)
   return nextHeartbeat
@@ -67,7 +78,7 @@ async function tick() {
   try {
     await sendHeartbeat()
     const nextHeartbeat = writeState()
-    log(`Heartbeat sent, next: ${nextHeartbeat.toISOString()}`)
+    log(`Heartbeat sent, next: ${formatDateTime(nextHeartbeat)}`)
   } catch (err) {
     log(`Heartbeat failed: ${err.message}`)
   }
