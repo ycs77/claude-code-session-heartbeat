@@ -53,9 +53,9 @@ function shouldSendHeartbeat() {
 
 function sendHeartbeat() {
   return new Promise((resolve, reject) => {
-    const child = exec('claude -p "Say hi" --system-prompt "You must respond with exactly \\"hi\\" to every single message from the user. Do not provide any other response, explanation, or variation. Only output: hi" --mcp-config .mcp.json --strict-mcp-config --disable-slash-commands --no-chrome', err => {
-      if (err) reject(err)
-      else resolve()
+    const child = exec('claude -p "Say hi" --system-prompt "You must respond with exactly \\"hi\\" to every single message from the user. Do not provide any other response, explanation, or variation. Only output: hi" --mcp-config .mcp.json --strict-mcp-config --disable-slash-commands --no-chrome', (error, stdout) => {
+      if (error) reject(error)
+      else resolve(stdout)
     })
     child.stdin.end()
   })
@@ -76,9 +76,9 @@ async function tick() {
   if (!shouldSendHeartbeat()) return
 
   try {
-    await sendHeartbeat()
+    const result = await sendHeartbeat()
     const nextHeartbeat = writeState()
-    log(`Heartbeat sent, next: ${formatDateTime(nextHeartbeat)}`)
+    log(`Heartbeat sent, next: ${formatDateTime(nextHeartbeat)}, out=${JSON.stringify(result)}`)
   } catch (err) {
     log(`Heartbeat failed: ${err.message}`)
   }
