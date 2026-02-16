@@ -52,12 +52,20 @@ function shouldSendHeartbeat() {
 }
 
 function sendHeartbeat() {
+  const TIMEOUT_MS = 15_000
+
   return new Promise((resolve, reject) => {
     const child = exec('claude -p "Say hi" --system-prompt "You must respond with exactly \\"hi\\" to every single message from the user. Do not provide any other response, explanation, or variation. Only output: hi" --mcp-config .mcp.json --strict-mcp-config --disable-slash-commands --no-chrome', (error, stdout, stderr) => {
+      clearTimeout(timer)
       if (error) reject(error)
       else resolve({ stdout, stderr })
     })
     child.stdin.end()
+
+    const timer = setTimeout(() => {
+      child.kill()
+      reject(new Error(`Claude process timed out after ${TIMEOUT_MS / 1000}s with no response`))
+    }, TIMEOUT_MS)
   })
 }
 
