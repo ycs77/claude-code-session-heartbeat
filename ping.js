@@ -2,11 +2,14 @@ import { exec } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import dns from 'node:dns'
+import { promisify } from 'node:util'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-
 const STATE_PATH = path.join(__dirname, 'state.json')
 const LOG_PATH = path.join(__dirname, 'ping.log')
+
+const dnsResolve = promisify(dns.resolve4)
 
 function formatDateTime(date) {
   const year = date.getFullYear()
@@ -51,6 +54,15 @@ function shouldSendHeartbeat() {
   return next === null || Date.now() >= next.getTime()
 }
 
+async function checkNetworkConnection() {
+  try {
+    await dnsResolve('google.com')
+    return true
+  } catch {
+    return false
+  }
+}
+
 function sendHeartbeat() {
   const TIMEOUT_MS = 15_000
 
@@ -84,10 +96,16 @@ async function tick() {
   if (!shouldSendHeartbeat()) return
 
   try {
+    const isNetworkConnected = await checkNetworkConnection()
+    if (!isNetworkConnected) {
+      log('Error: Network disconnected, skipping heartbeat')
+      return
+    }
+
     const result = await sendHeartbeat()
 
     if (result.stderr) {
-      log(`Heartbeat failed: ${result.stderr}`)
+      log(`Error: ${result.stderr}`)
     } else {
       const nextHeartbeat = writeState()
       log(`Heartbeat sent, next: ${
@@ -97,7 +115,7 @@ async function tick() {
       }`)
     }
   } catch (err) {
-    log(`Heartbeat failed: ${err.message}`)
+    log(`Error: ${err.message}`)
   }
 }
 
