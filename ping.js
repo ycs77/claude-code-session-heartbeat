@@ -69,8 +69,20 @@ function sendHeartbeat() {
   return new Promise((resolve, reject) => {
     const child = exec('claude -p "Say hi" --system-prompt "You must respond with exactly \\"hi\\" to every single message from the user. Do not provide any other response, explanation, or variation. Only output: hi" --mcp-config .mcp.json --strict-mcp-config --disable-slash-commands --no-chrome', (error, stdout, stderr) => {
       clearTimeout(timer)
-      if (error) reject(error)
-      else resolve({ stdout, stderr })
+      if (error) {
+        reject(error)
+      } else {
+        const result = {
+          output: stdout.trim(),
+          error: stderr.trim(),
+        }
+
+        if (!result.output && !result.error) {
+          result.error = 'No response from Claude'
+        }
+
+        resolve(result)
+      }
     })
     child.stdin.end()
 
@@ -104,14 +116,14 @@ async function tick() {
 
     const result = await sendHeartbeat()
 
-    if (result.stderr) {
-      log(`Error: ${result.stderr}`)
+    if (result.error) {
+      log(`Error: ${result.error}`)
     } else {
       const nextHeartbeat = writeState()
       log(`Heartbeat sent, next: ${
         formatDateTime(nextHeartbeat)
       }, out=${
-        JSON.stringify(result.stdout)
+        JSON.stringify(result.output)
       }`)
     }
   } catch (err) {
