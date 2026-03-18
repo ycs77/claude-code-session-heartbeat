@@ -12,6 +12,12 @@ const LOG_PATH = path.join(__dirname, 'ping.log')
 const CLAUDE_PATH = path.join(os.homedir(), '.local', 'bin', 'claude.exe')
 const MCP_CONFIG_PATH = path.join(__dirname, '.mcp.json')
 
+const SETTINGS = {
+  model: 'haiku',
+  alwaysThinkingEnabled: false,
+  disableAllHooks: true,
+}
+
 const dnsResolve = promisify(dns.resolve4)
 
 function formatDateTime(date) {
@@ -70,7 +76,7 @@ function sendHeartbeat() {
   const TIMEOUT_MS = 15_000
 
   return new Promise((resolve, reject) => {
-    const child = exec(`"${CLAUDE_PATH}" -p "Say hi" --system-prompt "You must respond with exactly \\"hi\\" to every single message from the user. Do not provide any other response, explanation, or variation. Only output: hi" --mcp-config "${MCP_CONFIG_PATH}" --strict-mcp-config --disable-slash-commands --no-chrome`, (error, stdout, stderr) => {
+    const child = exec(`"${CLAUDE_PATH}" -p "Say hi" --system-prompt "You must respond with exactly \\"hi\\" to every single message from the user. Do not provide any other response, explanation, or variation. Only output: hi" --settings "${settingsArg}" --mcp-config "${MCP_CONFIG_PATH}" --strict-mcp-config --disable-slash-commands --no-chrome`, (error, stdout, stderr) => {
       clearTimeout(timer)
       if (error) {
         reject(error)
