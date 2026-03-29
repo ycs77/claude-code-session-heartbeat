@@ -73,6 +73,7 @@ async function checkNetworkConnection() {
 }
 
 function sendHeartbeat() {
+  const settingsArg = JSON.stringify(SETTINGS).replace(/"/g, '\\"')
   const TIMEOUT_MS = 15_000
 
   return new Promise((resolve, reject) => {
