@@ -38,12 +38,11 @@ function log(message) {
 
 function calcNextHeartbeat(lastHeartbeat) {
   const reset = new Date(lastHeartbeat)
-  reset.setMinutes(0, 0, 0)
+  reset.setMinutes(40, 0, 0)
   reset.setHours(reset.getHours() + 5)
 
-  const minute = Math.floor(Math.random() * 21)
-  const second = Math.floor(Math.random() * 60)
-  reset.setMinutes(minute, second, 0)
+  const offsetSeconds = Math.floor(Math.random() * (20 * 60 - 1)) + 1
+  reset.setSeconds(reset.getSeconds() + offsetSeconds)
 
   return reset
 }
